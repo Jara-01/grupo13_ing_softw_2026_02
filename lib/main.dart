@@ -28,6 +28,84 @@ class ButtonAddDonacion extends StatefulWidget {
 }
 
 class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
+  bool? testPopup;
+  DateTime? fechaDonacion;
+  TimeOfDay? horaDonacion;
+  
+  Future<void> _inputFecha() async {
+    final DateTime? fechaUsuario = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(DateTime.now().year), 
+      lastDate: DateTime(2050),
+    );
+
+    setState(() {
+      fechaDonacion = fechaUsuario;
+      print(fechaDonacion);
+    });
+  }
+  Future<void> _inputHora() async {
+    final TimeOfDay? horaUsuario = await showTimePicker(
+      context: context,
+      initialTime: horaDonacion ?? TimeOfDay.now(),
+    );
+
+    setState(() {
+      horaDonacion = horaUsuario;
+      print(horaDonacion);
+    });
+  }
+
+  Future<void> _inputDonacion() async {
+  switch (await showDialog(
+    context:  context,
+    builder: (BuildContext context) {
+      return SimpleDialog(
+        title: const Text("test"),
+        children: [
+          SimpleDialogOption(
+            onPressed: () { Navigator.pop(context, true); },
+            child: const Text('True'),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                Text("Fecha y hora:"),
+                Row(
+                  children: [
+                    OutlinedButton(
+                      onPressed: _inputFecha,
+                      child: Text("Fecha"),
+                    ),
+                    OutlinedButton(
+                      onPressed: _inputHora,
+                      child: Text("Hora"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+  )) {
+    case true:
+      testPopup = true;
+      print("true");
+    break;
+    case false:
+      testPopup = false;
+      print("false");
+    break;
+    case null:
+      print("null");
+    break;
+  }
+}
+  
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -45,7 +123,7 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
               icon: const Icon(Icons.add),
               color: Colors.white,
               onPressed: () {
-                print("Abriendo pestaña de ingreso de donación...");
+                _inputDonacion();
               },
             ),
           ),
