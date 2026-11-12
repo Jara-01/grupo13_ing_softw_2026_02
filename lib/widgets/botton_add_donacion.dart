@@ -28,6 +28,13 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
     });
   }
 
+  void limpiarDonacion() {
+    donacionTipo = 'O+';
+    donacionVolumen = null;
+    donacionCentro = null;
+    donacionFecha = null;
+  }
+
   Future<void> _inputDonacion() async {
   showDialog(
     barrierDismissible: false,
@@ -128,32 +135,44 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
             ],
           ),
           actions: [
+            // Al cancelar todas las opciones vuelven a su valor predeterminado
             TextButton(
               onPressed: () {
-                donacionTipo = 'O+';
-                donacionVolumen = null;
-                donacionCentro = null;
-                donacionFecha = null;
+                limpiarDonacion();
                 Navigator.of(context).pop();
               },
               child: const Text("Cancelar"),
             ),
+            // Al aceptar primero se comprueba si las entradas son válidas, luego se añade un elemento a la lista de donaciones
             TextButton(
               onPressed: () {
-                inventarioMock.add(InventarioItem(
-                  id: "B-XX", // TODO: añadir un sistema de id's para las donaciones
-                  tipoSangre: donacionTipo,
-                  unidadesDisponibles: 1,
-                  centroOrigen: donacionCentro ?? '',
-                  fechaLlegada: donacionFecha ?? DateTime.now(),
-                  fechaVencimiento: donacionFecha!.add(Duration(days: 42)),
-                  volumenMl: donacionVolumen ?? 0,
-                ));
+                if(donacionVolumen == null || donacionVolumen !< 250) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Donación rechazada: Volumen inválido")),
+                  );
+                }
+                else if (donacionFecha == null || donacionFecha!.isAfter(DateTime.now())) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Donación rechazada: Fecha inválida")),
+                  );
+                }
+                else if (donacionCentro == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Donación rechazada: Centro inválido")),
+                  );
+                } else {
+                  inventarioMock.add(InventarioItem(
+                    id: "B-XX", // TODO: añadir un sistema de id's para las donaciones
+                    tipoSangre: donacionTipo,
+                    unidadesDisponibles: 1,
+                    centroOrigen: donacionCentro ?? '',
+                    fechaLlegada: donacionFecha ?? DateTime.now(),
+                    fechaVencimiento: donacionFecha!.add(Duration(days: 42)),
+                    volumenMl: donacionVolumen ?? 0,
+                  ));
+                }
                 Navigator.of(context).pop();
-                donacionTipo = 'O+';
-                donacionVolumen = null;
-                donacionCentro = null;
-                donacionFecha = null;
+                limpiarDonacion();
               },
               child: const Text("Aceptar"),
             ),
