@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ing_software/models/inventario_model.dart';
 import 'package:ing_software/screens/detalle_bolsas_screen.dart';
 import 'package:ing_software/models/lista_donaciones.dart';
 

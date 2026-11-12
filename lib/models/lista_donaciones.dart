@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:ing_software/models/inventario_model.dart';
 
 List<InventarioItem> inventarioMock = [
