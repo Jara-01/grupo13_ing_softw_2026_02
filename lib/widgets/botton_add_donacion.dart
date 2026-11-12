@@ -151,7 +151,7 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
                     SnackBar(content: Text("Donación rechazada: Volumen inválido")),
                   );
                 }
-                else if (donacionFecha == null || donacionFecha!.isAfter(DateTime.now())) {
+                else if (donacionFecha == null || donacionFecha!.isAfter(DateTime.now()) || donacionFecha!.isBefore(DateTime.now().subtract(Duration(days: 42)))) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Donación rechazada: Fecha inválida")),
                   );
