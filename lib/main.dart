@@ -56,7 +56,6 @@ class ButtonAddDonacion extends StatefulWidget {
 
 class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
   DateTime? fechaDonacion;
-  TimeOfDay? horaDonacion;
   
   Future<void> _inputFecha() async {
     final DateTime? fechaUsuario = await showDatePicker(
@@ -71,16 +70,6 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
       print(fechaDonacion);
     });
   }
-  Future<void> _inputHora() async {
-    final TimeOfDay? horaUsuario = await showTimePicker(
-      context: context,
-      initialTime: horaDonacion ?? TimeOfDay.now(),
-    );
-
-    setState(() {
-      horaDonacion = horaUsuario;
-    });
-  }
 
   Future<void> _inputDonacion() async {
   showDialog(
@@ -90,33 +79,59 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
       return AlertDialog(
         contentPadding: EdgeInsets.all(10.0),
         title: const Text("Agregar donación"),
-        content: SizedBox(
-          height: 200.0,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: .center,
-                crossAxisAlignment: .start,
-                spacing: 15.0,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  OutlinedButton(
+                  Text("Tipo de Sangre", style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text("testest"), // TODO: Volver esto en un widget de input
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Volumen:", style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text("testest"), // TODO: Volver esto en un widget de input
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Centro de Origen:", style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text("testest"), // TODO: Volver esto en un widget de input
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Fecha de Extracción:", style: const TextStyle(fontWeight: FontWeight.bold)),
+                  TextButton(
                     onPressed: _inputFecha,
                     child: Text("Cambiar fecha"),
                   ),
-                  OutlinedButton(
-                    onPressed: _inputHora,
-                    child: Text("Cambiar hora"),
-                  ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () {
               fechaDonacion = null;
-              horaDonacion = null;
               Navigator.of(context).pop();
             },
             child: const Text("Cancelar"),
@@ -140,7 +155,7 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
       onPressed: () {
         _inputDonacion();
       },
-      child: const Text('Agregar donación.'),
+      child: const Text('Agregar donación'),
     );
   }
 }
