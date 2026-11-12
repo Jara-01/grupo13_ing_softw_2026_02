@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ing_software/models/inventario_model.dart';
 
 class ButtonAddDonacion extends StatefulWidget {
   const ButtonAddDonacion({super.key});
@@ -128,6 +129,9 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
           actions: [
             TextButton(
               onPressed: () {
+                donacionTipo = 'O+';
+                donacionVolumen = null;
+                donacionCentro = null;
                 donacionFecha = null;
                 Navigator.of(context).pop();
               },
@@ -135,8 +139,20 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
             ),
             TextButton(
               onPressed: () {
-                // TODO: Guardar los datos ingresados a una instancia de donación.
+                InventarioItem(
+                  id: "B-XX", // TODO: sistema de id's
+                  tipoSangre: donacionTipo,
+                  unidadesDisponibles: 1,
+                  centroOrigen: donacionCentro ?? '',
+                  fechaLlegada: donacionFecha ?? DateTime.now(),
+                  fechaVencimiento: donacionFecha!.add(Duration(days: 30)),
+                  volumenMl: donacionVolumen ?? 0,
+                );
                 Navigator.of(context).pop();
+                donacionTipo = 'O+';
+                donacionVolumen = null;
+                donacionCentro = null;
+                donacionFecha = null;
               },
               child: const Text("Aceptar"),
             ),
