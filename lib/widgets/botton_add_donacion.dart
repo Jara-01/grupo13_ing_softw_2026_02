@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ing_software/models/inventario_model.dart';
+import 'package:ing_software/models/lista_donaciones.dart';
 
 class ButtonAddDonacion extends StatefulWidget {
   const ButtonAddDonacion({super.key});
@@ -139,15 +140,15 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
             ),
             TextButton(
               onPressed: () {
-                InventarioItem(
-                  id: "B-XX", // TODO: sistema de id's
+                inventarioMock.add(InventarioItem(
+                  id: "B-XX", // TODO: añadir un sistema de id's para las donaciones
                   tipoSangre: donacionTipo,
                   unidadesDisponibles: 1,
                   centroOrigen: donacionCentro ?? '',
                   fechaLlegada: donacionFecha ?? DateTime.now(),
-                  fechaVencimiento: donacionFecha!.add(Duration(days: 30)),
+                  fechaVencimiento: donacionFecha!.add(Duration(days: 42)),
                   volumenMl: donacionVolumen ?? 0,
-                );
+                ));
                 Navigator.of(context).pop();
                 donacionTipo = 'O+';
                 donacionVolumen = null;

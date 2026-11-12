@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ing_software/models/inventario_model.dart';
 import 'package:ing_software/screens/detalle_bolsas_screen.dart';
+import 'package:ing_software/models/lista_donaciones.dart';
 
 class InventarioScreen extends StatefulWidget {
   const InventarioScreen({super.key});
@@ -13,14 +14,14 @@ class _InventarioScreenState extends State<InventarioScreen> {
   String _tipoSeleccionado = 'O-';
 
   /// mocks de ejemplo para mostrar por pantalla
-  final List<InventarioItem> _inventarioMock = [
+  /*final List<InventarioItem> _inventarioMock = [
     InventarioItem(id: 'B001', tipoSangre: 'O-', unidadesDisponibles: 1, centroOrigen: 'Hospital Regional', fechaLlegada: DateTime.now().subtract(const Duration(days: 5)), fechaVencimiento: DateTime.now().add(const Duration(days: 10)), volumenMl: 450),
     InventarioItem(id: 'B002', tipoSangre: 'O-', unidadesDisponibles: 1, centroOrigen: 'Centro de Sangre', fechaLlegada: DateTime.now().subtract(const Duration(days: 2)), fechaVencimiento: DateTime.now().add(const Duration(days: 3)), volumenMl: 400),
     InventarioItem(id: 'B003', tipoSangre: 'O+', unidadesDisponibles: 1, centroOrigen: 'Clínica Las Encinas', fechaLlegada: DateTime.now().subtract(const Duration(days: 10)), fechaVencimiento: DateTime.now().add(const Duration(days: 25)), volumenMl: 450),
     InventarioItem(id: 'B004', tipoSangre: 'O+', unidadesDisponibles: 1, centroOrigen: 'Hospital Regional', fechaLlegada: DateTime.now().subtract(const Duration(days: 1)), fechaVencimiento: DateTime.now().add(const Duration(days: 30)), volumenMl: 500),
     InventarioItem(id: 'B005', tipoSangre: 'A+', unidadesDisponibles: 1, centroOrigen: 'Hospital Regional', fechaLlegada: DateTime.now().subtract(const Duration(days: 4)), fechaVencimiento: DateTime.now().add(const Duration(days: 8)), volumenMl: 450),
     InventarioItem(id: 'B006', tipoSangre: 'AB+', unidadesDisponibles: 1, centroOrigen: 'Centro de Sangre', fechaLlegada: DateTime.now().subtract(const Duration(days: 8)), fechaVencimiento: DateTime.now().add(const Duration(days: 2)), volumenMl: 350),
-  ];
+  ];*/
 
   List<String> _obtenerCompatibles(String tipo) {
     switch (tipo) {
@@ -37,7 +38,7 @@ class _InventarioScreenState extends State<InventarioScreen> {
   }
 
   int _obtenerStockDe(String tipoSangre) {
-    return _inventarioMock.where((i) => i.tipoSangre == tipoSangre).length;
+    return inventarioMock.where((i) => i.tipoSangre == tipoSangre).length;
   }
 
   Color _obtenerColorStock(int unidades) {
@@ -48,7 +49,7 @@ class _InventarioScreenState extends State<InventarioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tiposUnicos = _inventarioMock.map((e) => e.tipoSangre).toSet().toList();
+    final tiposUnicos = inventarioMock.map((e) => e.tipoSangre).toSet().toList();
     final compatibles = _obtenerCompatibles(_tipoSeleccionado);
 
     return Scaffold(
@@ -82,7 +83,7 @@ class _InventarioScreenState extends State<InventarioScreen> {
                         MaterialPageRoute(
                           builder: (context) => DetalleBolsasScreen(
                             tipoSangre: tipo,
-                            todasLasBolsas: _inventarioMock,
+                            todasLasBolsas: inventarioMock,
                           ),
                         ),
                       );
