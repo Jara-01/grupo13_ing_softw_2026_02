@@ -28,7 +28,6 @@ class ButtonAddDonacion extends StatefulWidget {
 }
 
 class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
-  bool? testPopup;
   DateTime? fechaDonacion;
   TimeOfDay? horaDonacion;
   
@@ -53,57 +52,59 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
 
     setState(() {
       horaDonacion = horaUsuario;
-      print(horaDonacion);
     });
   }
 
   Future<void> _inputDonacion() async {
-  switch (await showDialog(
+  showDialog(
+    barrierDismissible: false,
     context:  context,
     builder: (BuildContext context) {
-      return SimpleDialog(
-        title: const Text("test"),
-        children: [
-          SimpleDialogOption(
-            onPressed: () { Navigator.pop(context, true); },
-            child: const Text('True'),
+      return AlertDialog(
+        contentPadding: EdgeInsets.all(10.0),
+        title: const Text("Agregar donación"),
+        content: SizedBox(
+          height: 200.0,
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: .center,
+                crossAxisAlignment: .start,
+                spacing: 15.0,
+                children: [
+                  OutlinedButton(
+                    onPressed: _inputFecha,
+                    child: Text("Cambiar fecha"),
+                  ),
+                  OutlinedButton(
+                    onPressed: _inputHora,
+                    child: Text("Cambiar hora"),
+                  ),
+                ],
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                Text("Fecha y hora:"),
-                Row(
-                  children: [
-                    OutlinedButton(
-                      onPressed: _inputFecha,
-                      child: Text("Fecha"),
-                    ),
-                    OutlinedButton(
-                      onPressed: _inputHora,
-                      child: Text("Hora"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              fechaDonacion = null;
+              horaDonacion = null;
+              Navigator.of(context).pop();
+            },
+            child: const Text("Cancelar"),
+          ),
+          TextButton(
+            onPressed: () {
+              // TODO: Guardar los datos ingresados a una instancia de donación.
+              Navigator.of(context).pop();
+            },
+            child: const Text("Aceptar"),
           ),
         ],
       );
     }
-  )) {
-    case true:
-      testPopup = true;
-      print("true");
-    break;
-    case false:
-      testPopup = false;
-      print("false");
-    break;
-    case null:
-      print("null");
-    break;
-  }
+  );
 }
   
   @override
