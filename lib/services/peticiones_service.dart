@@ -28,7 +28,7 @@ class PeticionesService {
       centroSolicitante: emisor,
       tipoSangre: tipoSangre,
       cantidad: cantidad,
-      estado: 'pendiente',
+      estado: EstadoPeticion.pendiente,
     );
     _peticionesDB.add(nuevaPeticion);
   }
@@ -36,7 +36,7 @@ class PeticionesService {
   bool cerrarPeticion(String id) {
     try {
       final peticion = _peticionesDB.firstWhere((p) => p.id == id);
-      peticion.estado = 'cerrada';
+      peticion.estado = EstadoPeticion.cerrada;
       return true;
     } catch (e) {
       return false;
@@ -93,7 +93,7 @@ class PeticionesService {
       centroSolicitante: centroActual,
       tipoSangre: tipoSangre,
       cantidad: cantidad,
-      estado: 'pendiente',
+      estado: EstadoPeticion.pendiente,
       paciente: paciente,
       centroDestino: centroDestino,
       urgencia: urgencia,

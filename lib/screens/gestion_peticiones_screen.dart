@@ -423,6 +423,8 @@ class _HistorialScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text('Origen: ${p.centroSolicitante}'),
                       Text('Destino: ${p.centroDestino ?? '-'}'),
+                      // estado de la peticion (pendiente o cerrada)
+                      Text('Estado: ${p.estado.etiqueta}'),
                       Text('Sangre ${p.tipoSangre}  |  Solicitado: ${p.cantidad}'
                           '${p.stockAntes == null ? '' : '  |  Descontado: ${p.unidadesDescontadas}'}'),
                       // el detalle de stock solo existe si hubo descuento
