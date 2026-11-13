@@ -1,0 +1,21 @@
+Example usage
+
+$ curl -X POST localhost:3000/donaciones -H 'content-type: application/json' -d '{
+  "tipoSangre": "O+",
+  "centroOrigen": "Hospital Regional",
+  "fechaLlegada": "2026-11-13",
+  "fechaVencimiento": "2026-12-25",
+  "volumenMl": 450,
+  "estado": "disponible"
+}'
+
+$ curl localhost:3000/donaciones
+$ curl -X PATCH localhost:3000/donaciones/<id> -H 'content-type: application/json' -d '{"estado":"usada"}'
+$ curl -X DELETE localhost:3000/donaciones/<id>
+
+$ curl -X POST localhost:3000/peticiones -H 'content-type: application/json' -d '{
+  "centroSolicitante": "Clínica Sur",
+  "tipoSangre": "O+",
+  "cantidad": 3,
+  "estado": "pendiente"
+}'
