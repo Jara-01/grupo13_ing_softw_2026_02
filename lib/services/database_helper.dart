@@ -41,7 +41,7 @@ class DatabaseHelper {
   /// Historial:
   /// - 1: donaciones y peticiones.
   /// - 2: donante (US01, T01).
-  static const int versionEsquema = 2;
+  static const int versionEsquema = 3;
 
   /// Abre una base de datos solo para pruebas, con el esquema completo.
   /// Por defecto es en memoria; con [ruta] se puede usar un archivo
@@ -60,7 +60,7 @@ class DatabaseHelper {
   }
 
   Future<void> _upgradeDB(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 2) {
+    if (oldVersion < 3) {
       await crearTablaDonante(db);
     }
   }
@@ -90,6 +90,7 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE donaciones (
         id TEXT PRIMARY KEY,
+        rut TEXT NOT NULL,
         tipoSangre TEXT NOT NULL,
         centroOrigen TEXT NOT NULL,
         fechaLlegada TEXT NOT NULL,

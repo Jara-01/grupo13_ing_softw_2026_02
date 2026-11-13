@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ing_software/services/database_helper.dart';
+import '../utils/rut.dart';
 
 class ButtonAddDonacion extends StatefulWidget {
   const ButtonAddDonacion({super.key});
@@ -9,6 +10,7 @@ class ButtonAddDonacion extends StatefulWidget {
 }
 
 class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
+  String donacionRut = '';
   String donacionTipo = "O+";
   int? donacionVolumen;
   String? donacionCentro;
@@ -31,6 +33,7 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
 
   Future<void> _inputDonacion() async {
     setState(() {
+      donacionRut = '';
       donacionTipo = "O+";
       donacionVolumen = null;
       donacionCentro = null;
@@ -53,7 +56,31 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: [Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Rut del Donante:", style: TextStyle(fontWeight: FontWeight.bold)),
+                      SizedBox(
+                        width: 150,
+                        child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: "Ej: 12345678-9",
+                          ),
+                          onChanged: (rutUsuario) {
+                            if (int.tryParse(rutUsuario) != null) {
+                              setStateDialog(() {
+                                donacionRut = rutUsuario;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Row(
@@ -160,10 +187,17 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
                     final fechaLlegadaObj = donacionFecha ?? DateTime.now();
                     final fechaVencimientoObj = fechaLlegadaObj.add(const Duration(days: 42));
 
+                    await db.query(
+                      'donante',
+                      where: 'rut = ?',
+                      whereArgs: [Rut.normalizar(donacionRut)],
+                    );
+
                     await db.insert(
                       'donaciones',
                       {
                         'id': 'B-${DateTime.now().millisecondsSinceEpoch}',
+                        'rut': Rut.esValido(donacionRut) ? Rut.normalizar(donacionRut) : '',
                         'tipoSangre': donacionTipo,
                         'centroOrigen': donacionCentro ?? 'Hospital Regional',
                         'fechaLlegada': fechaLlegadaObj.toIso8601String(),
