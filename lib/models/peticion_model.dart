@@ -1,5 +1,4 @@
 class Peticion {
-
   final String id;
   final String centroSolicitante;
   final String tipoSangre;
