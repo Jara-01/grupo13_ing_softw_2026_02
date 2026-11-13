@@ -1,7 +1,7 @@
 class InventarioItem {
   final String id;
   final String tipoSangre;
-  final int unidadesDisponibles; // O volumen/cantidad de esta unidad específica
+  int unidadesDisponibles; // O volumen/cantidad de esta unidad específica
   final String centroOrigen;
   final DateTime fechaLlegada;
   final DateTime fechaVencimiento;

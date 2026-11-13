@@ -1,5 +1,5 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:ing_software/screens/gestion_peticiones_screen.dart';
 import 'package:ing_software/screens/inventario_screen.dart';
 import 'package:ing_software/widgets/botton_add_donacion.dart';
 
@@ -39,6 +39,15 @@ class MainMenuScreen extends StatelessWidget {
                 );
               },
               child: const Text('Inventario y compatibilidad'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GestionPeticionesScreen()),
+                );
+              },
+              child: const Text('Gestión de peticiones'),
             ),
             ButtonAddDonacion(),
           ],
