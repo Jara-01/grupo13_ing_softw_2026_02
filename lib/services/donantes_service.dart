@@ -7,6 +7,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import '../models/donante.dart';
 import '../utils/rut.dart';
+import 'elegibilidad.dart';
 
 /// El RUT no tiene formato válido o su dígito verificador no corresponde.
 class RutInvalidoException implements Exception {
@@ -35,6 +36,15 @@ class DatosDonanteInvalidosException implements Exception {
 
   @override
   String toString() => 'Datos del donante inválidos: $errores';
+}
+
+/// No existe un donante con ese RUT (UC-02, extensión 4').
+class DonanteNoEncontradoException implements Exception {
+  DonanteNoEncontradoException(this.rut);
+  final String rut;
+
+  @override
+  String toString() => 'No hay un donante registrado con RUT $rut.';
 }
 
 class DonantesService {
@@ -92,6 +102,72 @@ class DonantesService {
   Future<List<Donante>> listarDonantes() async {
     final filas = await _db.query(_tabla, orderBy: 'nombre COLLATE NOCASE');
     return filas.map(Donante.fromMap).toList();
+  }
+
+  /// T03 · Registra el resultado de la evaluación de elegibilidad
+  /// (RF-09, UC-01 pasos 6 a 8 y extensión 7').
+  ///
+  /// - [EstadoElegibilidad.diferido] exige [fechaDiferido] posterior a hoy.
+  /// - [EstadoElegibilidad.apto] y [EstadoElegibilidad.rechazado] no llevan
+  ///   fecha (si se envía, se ignora).
+  /// - No se puede volver a [EstadoElegibilidad.sinEvaluar].
+  ///
+  /// Cada cambio aumenta la versión del registro (control de concurrencia).
+  Future<Donante> registrarElegibilidad(
+    String rut,
+    EstadoElegibilidad estado, {
+    DateTime? fechaDiferido,
+    DateTime? hoy,
+  }) async {
+    final rutNormal = _rutNormalizado(rut);
+
+    if (estado == EstadoElegibilidad.sinEvaluar) {
+      throw DatosDonanteInvalidosException({
+        'estado': 'Debe indicar apto, diferido o rechazado.',
+      });
+    }
+    if (estado == EstadoElegibilidad.diferido) {
+      final dia = hoy ?? DateTime.now();
+      final soloHoy = DateTime(dia.year, dia.month, dia.day);
+      if (fechaDiferido == null || !fechaDiferido.isAfter(soloHoy)) {
+        throw DatosDonanteInvalidosException({
+          'fechaDiferido':
+              'Indique una fecha futura desde la cual podrá volver a donar.',
+        });
+      }
+    }
+
+    final fecha = estado == EstadoElegibilidad.diferido
+        ? Donante.fechaComoTexto(fechaDiferido!)
+        : null;
+
+    final filas = await _db.rawUpdate(
+      'UPDATE $_tabla '
+      'SET estado_elegibilidad = ?, fecha_diferido = ?, version = version + 1 '
+      'WHERE rut = ?',
+      [estado.name, fecha, rutNormal],
+    );
+    if (filas == 0) throw DonanteNoEncontradoException(rutNormal);
+
+    return (await obtenerPorRut(rutNormal))!;
+  }
+
+  /// T03 · Indica si el donante puede donar hoy (base de RF-05 / UC-02).
+  ///
+  /// [ultimaDonacion] la entregará el registro de extracciones (US02, T05);
+  /// mientras tanto se recibe como parámetro.
+  Future<ResultadoElegibilidad> consultarElegibilidad(
+    String rut, {
+    DateTime? ultimaDonacion,
+    DateTime? hoy,
+  }) async {
+    final donante = await obtenerPorRut(rut);
+    if (donante == null) throw DonanteNoEncontradoException(rut);
+    return evaluarElegibilidad(
+      donante: donante,
+      hoy: hoy ?? DateTime.now(),
+      ultimaDonacion: ultimaDonacion,
+    );
   }
 
   /// Valida los datos mínimos de RF-08. Devuelve un mapa campo → mensaje,
