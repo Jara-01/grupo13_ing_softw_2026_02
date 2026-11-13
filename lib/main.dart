@@ -1,9 +1,21 @@
 // lib/main.dart
+import 'dart:io';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:ing_software/screens/inventario_screen.dart';
 import 'package:ing_software/widgets/botton_add_donacion.dart';
+import 'services/local_database.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+
+  await LocalDatabase.instance.database;
+
   runApp(const MyApp());
 }
 

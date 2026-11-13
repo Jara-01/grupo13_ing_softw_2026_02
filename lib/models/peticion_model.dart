@@ -33,4 +33,26 @@ class Peticion {
       estado: json['estado'],
     );
   }
+
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'centro_solicitante': centroSolicitante,
+      'tipo_sangre': tipoSangre,
+      'cantidad': cantidad,
+      'estado': estado,
+    };
+  }
+
+
+  factory Peticion.fromMap(Map<String, dynamic> map) {
+    return Peticion(
+      id: map['id'],
+      centroSolicitante: map['centro_solicitante'],
+      tipoSangre: map['tipo_sangre'],
+      cantidad: map['cantidad'],
+      estado: map['estado'],
+    );
+  }
 }
