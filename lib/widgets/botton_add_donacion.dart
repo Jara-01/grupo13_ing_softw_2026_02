@@ -10,6 +10,7 @@ class ButtonAddDonacion extends StatefulWidget {
 }
 
 class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
+  int donacionId = 7; // PLACEHOLDER
   String donacionTipo = "O+";
   int? donacionVolumen;
   String? donacionCentro;
@@ -162,7 +163,7 @@ class _ButtonAddDonacionState extends State<ButtonAddDonacion> {
                   );
                 } else {
                   inventarioMock.add(InventarioItem(
-                    id: "B-XX", // TODO: añadir un sistema de id's para las donaciones
+                    id: "B00$donacionId", // TODO: añadir un sistema de id's para las donaciones
                     tipoSangre: donacionTipo,
                     unidadesDisponibles: 1,
                     centroOrigen: donacionCentro ?? '',
