@@ -1,12 +1,11 @@
-//niveles de urgencia permitidos en una peticion
+// Niveles de urgencia permitidos en una petición.
 const List<String> nivelesUrgencia = ['Baja', 'Media', 'Alta', 'Critica'];
 
-// estados posibles de una peticion entre centros
+// Estados posibles de una petición entre centros.
 enum EstadoPeticion {
   pendiente,
   cerrada;
 
-  // texto para mostrar en pantalla
   String get etiqueta {
     switch (this) {
       case EstadoPeticion.pendiente:
@@ -17,23 +16,16 @@ enum EstadoPeticion {
   }
 }
 
-// modelo de una peticion de sangre entre centros
 class Peticion {
   final String id;
   final String centroSolicitante;
   final String? centroDestino;
   final String tipoSangre;
-  // bolsas solicitadas
   final int cantidad;
-
   EstadoPeticion estado;
-
-  // datos del caso que origina la peticion
   final String? paciente;
   final String? urgencia;
   final DateTime? fecha;
-
-  // registro del descuento hecho al inventario
   final int unidadesDescontadas;
   final int? stockAntes;
   final int? stockDespues;
@@ -53,7 +45,7 @@ class Peticion {
     this.stockDespues,
   });
 
-  // convierte la peticion a un mapa para guardarla en la base de datos
+  /// Mapa completo para serializar una petición fuera del esquema SQLite actual.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -69,5 +61,40 @@ class Peticion {
       'stockAntes': stockAntes,
       'stockDespues': stockDespues,
     };
+  }
+
+  /// Conserva el formato de las cinco columnas de la tabla `peticiones`.
+  /// DatabaseHelper usa este método al insertar en el esquema existente.
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'centroSolicitante': centroSolicitante,
+      'tipoSangre': tipoSangre,
+      'cantidad': cantidad,
+      'estado': estado.name,
+    };
+  }
+
+  factory Peticion.fromJson(Map<String, dynamic> json) {
+    final estadoTexto = json['estado'] as String? ?? EstadoPeticion.pendiente.name;
+    final fechaTexto = json['fecha'] as String?;
+
+    return Peticion(
+      id: json['id'] as String,
+      centroSolicitante: json['centroSolicitante'] as String,
+      tipoSangre: json['tipoSangre'] as String,
+      cantidad: (json['cantidad'] as num).toInt(),
+      estado: EstadoPeticion.values.firstWhere(
+        (estado) => estado.name == estadoTexto,
+        orElse: () => EstadoPeticion.pendiente,
+      ),
+      centroDestino: json['centroDestino'] as String?,
+      paciente: json['paciente'] as String?,
+      urgencia: json['urgencia'] as String?,
+      fecha: fechaTexto == null ? null : DateTime.tryParse(fechaTexto),
+      unidadesDescontadas: (json['unidadesDescontadas'] as num?)?.toInt() ?? 0,
+      stockAntes: (json['stockAntes'] as num?)?.toInt(),
+      stockDespues: (json['stockDespues'] as num?)?.toInt(),
+    );
   }
 }
