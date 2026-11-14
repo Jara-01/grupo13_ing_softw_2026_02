@@ -12,18 +12,27 @@ class InventarioScreen extends StatefulWidget {
 
 class _InventarioScreenState extends State<InventarioScreen> {
   String _tipoSeleccionado = 'O-';
-
+  
   List<String> _obtenerCompatibles(String tipo) {
     switch (tipo) {
-      case 'O-': return ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
-      case 'O+': return ['O+', 'A+', 'B+', 'AB+'];
-      case 'A-': return ['A-', 'A+', 'AB-', 'AB+'];
-      case 'A+': return ['A+', 'AB+'];
-      case 'B-': return ['B-', 'B+', 'AB-', 'AB+'];
-      case 'B+': return ['B+', 'AB+'];
-      case 'AB-': return ['AB-', 'AB+'];
-      case 'AB+': return ['AB+'];
-      default: return [];
+      case 'O-':
+        return ['O-'];
+      case 'O+':
+        return ['O-', 'O+'];
+      case 'A-':
+        return ['O-', 'A-'];
+      case 'A+':
+        return ['O-', 'O+', 'A-', 'A+'];
+      case 'B-':
+        return ['O-', 'B-'];
+      case 'B+':
+        return ['O-', 'O+', 'B-', 'B+'];
+      case 'AB-':
+        return ['O-', 'A-', 'B-', 'AB-'];
+      case 'AB+':
+        return ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
+      default:
+        return [];
     }
   }
 
