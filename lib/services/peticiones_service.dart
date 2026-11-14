@@ -59,8 +59,8 @@ class PeticionesService {
     return mapa;
   }
 
-  // crea la peticion y descuenta del inventario, usando primero las bolsas mas proximas a vencer.
-  //si el stock es menor o igual a lo pedido, se queda sin bolsas y desaparece del inventario activo
+  // Crea la peticion y descuenta primero las bolsas mas proximas a vencer.
+  // La operacion falla completa si no hay stock suficiente: nunca hay descuentos parciales.
   Peticion crearPeticionConDescuento({
     required String paciente,
     required String centroDestino,
@@ -68,14 +68,24 @@ class PeticionesService {
     required int cantidad,
     required String urgencia,
   }) {
+    if (cantidad <= 0) {
+      throw ArgumentError.value(cantidad, 'cantidad', 'Debe ser mayor que cero.');
+    }
+
     final bolsas = inventarioMock.where((i) => i.tipoSangre == tipoSangre).toList()
       ..sort((a, b) => a.fechaVencimiento.compareTo(b.fechaVencimiento));
 
     final stockAntes = bolsas.fold<int>(0, (s, b) => s + b.unidadesDisponibles);
+    if (cantidad > stockAntes) {
+      throw StateError(
+        'Stock insuficiente para $tipoSangre: solicitado $cantidad, disponible $stockAntes.',
+      );
+    }
 
+    // La validacion se hace antes de modificar el inventario.
     int restante = cantidad;
     for (final bolsa in bolsas) {
-      if (restante <= 0) break;
+      if (restante == 0) break;
       if (bolsa.unidadesDisponibles <= restante) {
         restante -= bolsa.unidadesDisponibles;
         inventarioMock.remove(bolsa);
@@ -84,9 +94,6 @@ class PeticionesService {
         restante = 0;
       }
     }
-
-    // nunca se descuenta mas de lo que habia
-    final descontadas = cantidad - restante;
 
     final nueva = Peticion(
       id: 'PET-${(_peticionesDB.length + 1).toString().padLeft(3, '0')}',
@@ -98,9 +105,9 @@ class PeticionesService {
       centroDestino: centroDestino,
       urgencia: urgencia,
       fecha: DateTime.now(),
-      unidadesDescontadas: descontadas,
+      unidadesDescontadas: cantidad,
       stockAntes: stockAntes,
-      stockDespues: stockAntes - descontadas,
+      stockDespues: stockAntes - cantidad,
     );
     _peticionesDB.add(nueva);
     return nueva;

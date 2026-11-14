@@ -61,17 +61,22 @@ class _GestionPeticionesScreenState extends State<GestionPeticionesScreen> {
 
   // registra la peticion y descuenta el inventario
   void _confirmarPeticion(_DatosFormulario d) {
-    // late final porque se asigna dentro del setState
     late final Peticion creada;
-    setState(() {
-      creada = _servicio.crearPeticionConDescuento(
-        paciente: d.paciente,
-        centroDestino: d.centro,
-        tipoSangre: d.tipoSangre,
-        cantidad: d.cantidad,
-        urgencia: d.urgencia,
-      );
-    });
+    try {
+      setState(() {
+        creada = _servicio.crearPeticionConDescuento(
+          paciente: d.paciente,
+          centroDestino: d.centro,
+          tipoSangre: d.tipoSangre,
+          cantidad: d.cantidad,
+          urgencia: d.urgencia,
+        );
+      });
+    } on StateError catch (error) {
+      _mostrarMensaje(error.message);
+      return;
+    }
+
     // si el stock quedo en 0, el tipo ya no aparece en el inventario
     _mostrarMensaje(creada.stockDespues == 0
         ? 'Peticion enviada. Se agotó ${creada.tipoSangre}'
@@ -245,7 +250,6 @@ class _FormularioPeticionState extends State<_FormularioPeticion> {
             children: [
               Text('Nueva petición', style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: 16),
-
               // nombre del paciente
               TextFormField(
                 controller: _pacienteCtrl,
@@ -259,7 +263,6 @@ class _FormularioPeticionState extends State<_FormularioPeticion> {
                     : null,
               ),
               const SizedBox(height: 12),
-
               // centro de destino
               DropdownButtonFormField<String>(
                 value: _centro,
@@ -275,7 +278,6 @@ class _FormularioPeticionState extends State<_FormularioPeticion> {
                 validator: (v) => v == null ? 'Selecciona un centro' : null,
               ),
               const SizedBox(height: 12),
-
               // insumo (tipo de sangre) con su stock disponible
               DropdownButtonFormField<String>(
                 value: _tipoSangre,
@@ -294,7 +296,6 @@ class _FormularioPeticionState extends State<_FormularioPeticion> {
                 validator: (v) => v == null ? 'Selecciona un insumo' : null,
               ),
               const SizedBox(height: 12),
-
               // cantidad requerida
               TextFormField(
                 controller: _cantidadCtrl,
@@ -302,21 +303,24 @@ class _FormularioPeticionState extends State<_FormularioPeticion> {
                 decoration: InputDecoration(
                   labelText: 'Cantidad requerida (bolsas)',
                   border: const OutlineInputBorder(),
-                  // el stock disponible se muestra solo al elegir un tipo
                   helperText: _tipoSangre == null
                       ? null
                       : 'Disponible: ${widget.stockPorTipo[_tipoSangre]}.',
                   helperMaxLines: 2,
                 ),
                 validator: (v) {
-                  // debe ser un entero mayor a 0
                   final n = int.tryParse((v ?? '').trim());
                   if (n == null || n <= 0) return 'Ingrese una cantidad mayor a 0';
+                  final disponible = _tipoSangre == null
+                      ? null
+                      : widget.stockPorTipo[_tipoSangre];
+                  if (disponible != null && n > disponible) {
+                    return 'Stock insuficiente: disponible $disponible';
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 12),
-
               // nivel de urgencia
               DropdownButtonFormField<String>(
                 value: _urgencia,
@@ -339,7 +343,6 @@ class _FormularioPeticionState extends State<_FormularioPeticion> {
                 onChanged: (v) => setState(() => _urgencia = v ?? _urgencia),
               ),
               const SizedBox(height: 20),
-
               FilledButton(
                 onPressed: _enviar,
                 child: const Text('confirmar y enviar peticion'),
@@ -393,7 +396,6 @@ class _HistorialScreen extends StatelessWidget {
               children: tipos.map((t) => Chip(label: Text('$t: ${stock[t]}'))).toList(),
             ),
           const Divider(height: 32),
-
           // registro de peticiones
           Text('Peticiones (${peticiones.length})', style: tema.textTheme.titleMedium),
           const SizedBox(height: 8),
@@ -423,14 +425,11 @@ class _HistorialScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text('Origen: ${p.centroSolicitante}'),
                       Text('Destino: ${p.centroDestino ?? '-'}'),
-                      // estado de la peticion (pendiente o cerrada)
                       Text('Estado: ${p.estado.etiqueta}'),
                       Text('Sangre ${p.tipoSangre}  |  Solicitado: ${p.cantidad}'
                           '${p.stockAntes == null ? '' : '  |  Descontado: ${p.unidadesDescontadas}'}'),
-                      // el detalle de stock solo existe si hubo descuento
                       if (p.stockAntes != null)
                         Text('Stock antes: ${p.stockAntes} -> stock despues: ${p.stockDespues}'),
-                      // stock en 0 significa que el tipo salio del inventario
                       if (p.stockDespues == 0 && p.stockAntes != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),

@@ -12,9 +12,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MainMenuScreen(),
+      home: MainMenuScreen(),
     );
   }
 }
@@ -27,15 +27,15 @@ class MainMenuScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Column(
-          mainAxisAlignment: .center,
-          crossAxisAlignment: .center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 10.0,
           children: [
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const InventarioScreen()),
+                  MaterialPageRoute(builder: (context) => InventarioScreen()),
                 );
               },
               child: const Text('Inventario y compatibilidad'),
@@ -49,7 +49,7 @@ class MainMenuScreen extends StatelessWidget {
               },
               child: const Text('Gestión de peticiones'),
             ),
-            ButtonAddDonacion(),
+          const ButtonAddDonacion(),
           ],
         ),
       ),

@@ -52,4 +52,22 @@ class Peticion {
     this.stockAntes,
     this.stockDespues,
   });
+
+  // convierte la peticion a un mapa para guardarla en la base de datos
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'centroSolicitante': centroSolicitante,
+      'centroDestino': centroDestino,
+      'tipoSangre': tipoSangre,
+      'cantidad': cantidad,
+      'estado': estado.name,
+      'paciente': paciente,
+      'urgencia': urgencia,
+      'fecha': fecha?.toIso8601String(),
+      'unidadesDescontadas': unidadesDescontadas,
+      'stockAntes': stockAntes,
+      'stockDespues': stockDespues,
+    };
+  }
 }
